@@ -3,6 +3,9 @@ package javalab;
 import javax.swing.*;
 import java.awt.*;
 import java.awt.event.ActionEvent;
+import java.awt.event.MouseAdapter;
+import java.awt.event.MouseEvent;
+import java.util.Random;
 import java.util.TreeMap;
 import java.util.Map;
 
@@ -11,8 +14,7 @@ public class MyFrame
     private final Map<String, Person> PersonBase = new TreeMap<>();
 
     JFrame frame;
-    JTextField logField;
-    JPasswordField passwordField;
+
     private String text;
 
 
@@ -20,30 +22,32 @@ public class MyFrame
     {
 
         this.frame = createFrame();
-        this.logField = createTField();
-        this.passwordField = createPasswordField();
 
-        JLabel idLabel = createLabel("ID:");
-        idLabel.setBounds(110,100,20,30);
 
-        JLabel passwordLabel = createLabel("Pass:");
-        passwordLabel.setBounds(100,150,75,30);
 
-        JButton loginButton = createButton("Login");
-        loginButton.setBounds(50,300,150,50);
-        loginButton.addActionListener(e -> loginButtonPressed(e));
+        JButton moveButton = createButton("Move");
+        moveButton.setBounds(50,300,150,50);
+        moveButton.addActionListener(e -> loginButtonPressed(e));
+        Random r =new Random();
+        moveButton.addMouseListener(new MouseAdapter() {
+            @Override
+            public void mouseEntered(MouseEvent e) {
+                super.mouseEntered(e);
+                int x = (r.nextInt()%225)+225;
+                int y = (r.nextInt()%200)+200;
+                moveButton.setLocation(x,y);
+            }
+        });
+        JButton resetButton = createButton("Reset");
+        resetButton.setBounds(290,300,150,50);
+        resetButton.addActionListener(e -> resetButtonPressed());
 
-        JButton cancelButton = createButton("Cancel");
-        cancelButton.setBounds(290,300,150,50);
-        cancelButton.addActionListener(e -> cancelButtonPressed());
 
-        frame.getRootPane().setDefaultButton(loginButton); // Linia ta sprawia, że wcisniety klawisz Enter wciska przycisk "Login"
-        frame.add(loginButton);
-        frame.add(cancelButton);
-        frame.add(logField);
-        frame.add(passwordField);
-        frame.add(idLabel);
-        frame.add(passwordLabel);
+        frame.getRootPane().setDefaultButton(moveButton); // Linia ta sprawia, że wcisniety klawisz Enter wciska przycisk "Login"
+        frame.add(moveButton);
+        frame.add(resetButton);
+
+
 
         addUsers(PersonBase);
     }
@@ -76,47 +80,13 @@ public class MyFrame
 
     private void loginButtonPressed(ActionEvent event)
     {
-        String login = logField.getText();
-        String password = String.valueOf(passwordField.getPassword());
 
-
-        if(PersonBase.containsKey(login))
-        {
-            if (PersonBase.get(login).getPassword().equals(password))
-                accessPermitted();
-
-            else
-                accessDenied();
-        }
-        else
-        {
-            accessDenied();
-        }
     }
 
-    private void accessPermitted()
-    {
-        frame.getContentPane().setBackground(Color.white);
-        frame.getContentPane().setBackground(Color.green);
-        clearT();
-    }
 
-    private void accessDenied()
+    private void resetButtonPressed()
     {
-        frame.getContentPane().setBackground(Color.white);
-        frame.getContentPane().setBackground(Color.red);
-        clearT();
-    }
 
-    private void clearT()
-    {
-        logField.setText(null);
-        passwordField.setText(null);
-    }
-
-    private void cancelButtonPressed()
-    {
-        System.exit(0);
     }
 
     private JTextField createTField()
@@ -129,15 +99,6 @@ public class MyFrame
         return loginField;
     }
 
-    private JPasswordField createPasswordField()
-    {
-        JPasswordField passwordField = new JPasswordField();
-
-        passwordField.setBounds(150, 150,200,30);
-        passwordField.setBorder(BorderFactory.createLineBorder(Color.black,2));
-
-        return passwordField;
-    }
 
     private JLabel createLabel(String text)
     {
